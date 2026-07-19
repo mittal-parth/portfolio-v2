@@ -122,16 +122,46 @@ body {
   }
 }
 
-.achievement-scroll {
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-grid-major) transparent;
+/* Hallmark · component: clothesline-achievements · genre: playful · theme: custom (Cutting Mat)
+ * states: swap-button default · hover · focus · active
+ * contrast: pass
+ */
+
+@keyframes clothesline-swap-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.achievement-scroll::-webkit-scrollbar {
-  height: 6px;
+.clothesline-swap {
+  animation: clothesline-swap-in var(--dur-base) var(--ease-out) both;
 }
 
-.achievement-scroll::-webkit-scrollbar-thumb {
-  background: var(--color-grid-major);
-  border-radius: 999px;
+@media (prefers-reduced-motion: reduce) {
+  .clothesline-swap {
+    animation: none;
+  }
+}
+
+.clothesline-swap-btn {
+  transition:
+    transform var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .clothesline-swap-btn {
+    transition: none;
+  }
+
+  .clothesline-swap-btn:active {
+    transform: none;
+  }
 }

@@ -1,13 +1,17 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Image from "next/image";
-import { ExternalLink, Newspaper } from "lucide-react";
+import { Award, ExternalLink, Medal, Newspaper, RotateCw, Trophy } from "lucide-react";
 import { AiFillGithub, AiFillYoutube } from "@/lib/icons";
-import { achievements } from "@/data/portfolio";
+import { achievements, type Achievement } from "@/data/portfolio";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { Stamp } from "@/components/decor/Decor";
-import { useDraggable, useDraggableEnabled } from "@/components/decor/useDraggable";
+import { Polaroid } from "@/components/decor/Decor";
+import { Clothesline, HangingSlot } from "@/components/decor/Clothesline";
 import { cn } from "@/lib/utils";
+
+const PAGE_SIZE = 5;
+const PAGE_COUNT = Math.ceil(achievements.length / PAGE_SIZE);
 
 const linkIcons = [
   { key: "article" as const, Icon: Newspaper, label: "Article" },
@@ -16,72 +20,117 @@ const linkIcons = [
   { key: "github" as const, Icon: AiFillGithub, label: "GitHub" },
 ];
 
-function AchievementCard({
-  item,
-  className,
-  draggable = false,
-}: {
-  item: (typeof achievements)[number];
-  className?: string;
-  draggable?: boolean;
-}) {
-  const dragEnabled = useDraggableEnabled() && draggable;
-  const { ref, style, dragHandlers } = useDraggable({
-    id: `ach-${item.id}`,
-    disabled: !dragEnabled,
-  });
+type MedalTier = "gold" | "silver" | "bronze" | "neutral";
+
+function getMedalTier(position: string): MedalTier {
+  const p = position.toLowerCase();
+  if (/\bwinner\b/.test(p) && !/runner/.test(p)) return "gold";
+  if (/1st runner|runners up/.test(p)) return "silver";
+  if (/2nd runner|\brunner up\b/.test(p)) return "bronze";
+  return "neutral";
+}
+
+const medalStyles: Record<MedalTier, { Icon: typeof Trophy; color: string }> = {
+  gold: { Icon: Trophy, color: "var(--color-medal-gold)" },
+  silver: { Icon: Medal, color: "var(--color-medal-silver)" },
+  bronze: { Icon: Medal, color: "var(--color-medal-bronze)" },
+  neutral: { Icon: Award, color: "var(--color-ink-muted)" },
+};
+
+function PositionBadge({ position }: { position: string }) {
+  const tier = getMedalTier(position);
+  const { Icon, color } = medalStyles[tier];
 
   return (
-    <article
-      ref={ref}
-      {...(dragEnabled ? dragHandlers : {})}
-      className={cn(
-        "w-[min(85vw,16rem)] shrink-0 rounded-[var(--radius-lg)] border-4 border-[var(--color-sticker-outline)] bg-[var(--color-paper)] p-3 shadow-[4px_6px_0_var(--color-shadow)]",
-        dragEnabled && "cursor-grab active:cursor-grabbing",
-        className,
-      )}
-      style={{
-        transform: `${style.transform} rotate(${item.rotation ?? 0}deg)`,
-        touchAction: style.touchAction,
-      }}
-    >
-      <div className="mb-2 flex items-start gap-2.5">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-[var(--color-sticker-outline)] bg-[var(--color-paper-muted)]">
-          <Image src={item.icon} alt="" width={36} height={36} className="h-full w-full object-cover" />
+    <span className="inline-flex items-center gap-1 text-[10px] font-medium leading-none text-[var(--color-ink-muted)]">
+      <Icon size={11} strokeWidth={2.25} style={{ color }} aria-hidden="true" />
+      <span className="line-clamp-1">{position}</span>
+    </span>
+  );
+}
+
+function AchievementPolaroid({ item }: { item: Achievement }) {
+  const imageSrc = item.photo ?? item.icon;
+  const hasPhoto = Boolean(item.photo);
+
+  return (
+    <Polaroid
+      rotation={item.rotation ?? 0}
+      image={
+        hasPhoto ? (
+          <Image
+            src={imageSrc}
+            alt=""
+            width={200}
+            height={200}
+            className="h-full w-full object-cover"
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center">
+            <Image
+              src={item.icon}
+              alt=""
+              width={48}
+              height={48}
+              className="h-10 w-10 object-contain opacity-40 sm:h-12 sm:w-12"
+            />
+          </div>
+        )
+      }
+      caption={
+        <>
+          <PositionBadge position={item.position} />
+          <h3 className="mt-1 line-clamp-2 text-[10px] font-semibold leading-snug text-[var(--color-ink)] sm:text-xs">
+            {item.event}
+          </h3>
+          <p className="mt-0.5 line-clamp-2 text-[9px] leading-relaxed text-[var(--color-ink-muted)] sm:text-[10px]">
+            {item.highlight}
+          </p>
+        </>
+      }
+      footer={
+        <div className="mt-1.5 flex flex-wrap gap-1">
+          {linkIcons.map(({ key, Icon, label }) => {
+            const href = item[key];
+            if (!href) return null;
+            return (
+              <a
+                key={key}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`${label} for ${item.event}`}
+                className="flex h-5 w-5 items-center justify-center rounded border border-[var(--color-ink-subtle)]/25 text-[var(--color-ink-muted)] hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[var(--color-focus)] sm:h-6 sm:w-6"
+              >
+                <Icon size={10} aria-hidden="true" />
+              </a>
+            );
+          })}
         </div>
-        <div className="min-w-0">
-          <Stamp rotation={-3} className="!px-1.5 !py-0.5 !text-[10px]">
-            {item.position}
-          </Stamp>
-          <h3 className="mt-1 text-xs font-semibold leading-snug text-[var(--color-ink)]">{item.event}</h3>
-        </div>
-      </div>
-      <p className="text-xs leading-relaxed text-[var(--color-ink-muted)]">{item.highlight}</p>
-      <div className="mt-3 flex gap-1.5">
-        {linkIcons.map(({ key, Icon, label }) => {
-          const href = item[key];
-          if (!href) return null;
-          return (
-            <a
-              key={key}
-              href={href}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={`${label} for ${item.event}`}
-              className="flex h-7 w-7 items-center justify-center rounded-md border border-[var(--color-ink-subtle)]/25 text-[var(--color-ink-muted)] hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-focus)]"
-            >
-              <Icon size={13} aria-hidden="true" />
-            </a>
-          );
-        })}
-      </div>
-    </article>
+      }
+    />
   );
 }
 
 export function AchievementsSection() {
+  const [page, setPage] = useState(0);
+
+  useEffect(() => {
+    for (const key of Object.keys(localStorage)) {
+      if (key.startsWith("drag-pos-ach-")) {
+        localStorage.removeItem(key);
+      }
+    }
+  }, []);
+
+  const visible = achievements.slice(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE);
+
   return (
-    <section id="achievements" aria-labelledby="achievements-heading" className="animate-fade-up">
+    <section
+      id="achievements"
+      aria-labelledby="achievements-heading"
+      className="relative animate-fade-up pb-9 sm:pb-10"
+    >
       <SectionHeading
         id="achievements-heading"
         title="Achievements"
@@ -89,19 +138,31 @@ export function AchievementsSection() {
         onMat
         className="px-1"
       />
-      <div
-        className="achievement-scroll flex gap-4 overflow-x-auto px-1 pb-4 pt-2 snap-x snap-mandatory lg:gap-6"
-        role="list"
-      >
-        {achievements.map((item, index) => (
-          <AchievementCard
-            key={item.id}
-            item={item}
-            draggable={index < 3}
-            className="snap-start"
-          />
+
+      <Clothesline swapKey={page}>
+        {visible.map((item, index) => (
+          <HangingSlot key={item.id} index={index} total={visible.length}>
+            <AchievementPolaroid item={item} />
+          </HangingSlot>
         ))}
-      </div>
+      </Clothesline>
+
+      {PAGE_COUNT > 1 && (
+        <button
+          type="button"
+          onClick={() => setPage((p) => (p + 1) % PAGE_COUNT)}
+          aria-label={page === 0 ? "Show more wins" : "Show earlier wins"}
+          className={cn(
+            "clothesline-swap-btn absolute bottom-0 right-0 flex h-8 w-8 items-center justify-center rounded-full",
+            "border border-[var(--color-on-mat)]/12 bg-[var(--color-paper)]/50 text-[var(--color-on-mat)]/50 backdrop-blur-[2px]",
+            "hover:border-[var(--color-on-mat)]/25 hover:bg-[var(--color-paper)]/75 hover:text-[var(--color-on-mat)]/80",
+            "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-focus)]",
+            "active:scale-95",
+          )}
+        >
+          <RotateCw size={14} strokeWidth={2.25} aria-hidden="true" />
+        </button>
+      )}
     </section>
   );
 }

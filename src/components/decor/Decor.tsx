@@ -3,20 +3,42 @@ import { PushPin } from "@/components/decor/PushPin";
 import { WashiTape } from "@/components/decor/PushPin";
 
 type PolaroidProps = {
-  children: React.ReactNode;
+  children?: React.ReactNode;
+  image?: React.ReactNode;
+  caption?: React.ReactNode;
+  footer?: React.ReactNode;
   className?: string;
   rotation?: number;
   pinned?: boolean;
 };
 
-export function Polaroid({ children, className, rotation = -2, pinned = false }: PolaroidProps) {
+export function Polaroid({
+  children,
+  image,
+  caption,
+  footer,
+  className,
+  rotation = -2,
+  pinned = false,
+}: PolaroidProps) {
   return (
     <div
-      className={cn("relative bg-[var(--color-paper)] p-2 pb-8 shadow-[4px_6px_0_var(--color-shadow)]", className)}
+      className={cn(
+        "relative w-full bg-[var(--color-paper)] p-1.5 pb-5 shadow-[4px_6px_0_var(--color-shadow)] sm:p-2 sm:pb-6",
+        className,
+      )}
       style={{ transform: `rotate(${rotation}deg)` }}
     >
       {pinned && <PushPin />}
-      <div className="overflow-hidden border border-[var(--color-paper-muted)]">{children}</div>
+      <div className="aspect-square overflow-hidden border border-[var(--color-paper-muted)] bg-[var(--color-polaroid-placeholder)]">
+        {image ?? children}
+      </div>
+      {(caption || footer) && (
+        <div className="mt-1.5 min-w-0 px-0.5 sm:mt-2">
+          {caption}
+          {footer}
+        </div>
+      )}
     </div>
   );
 }

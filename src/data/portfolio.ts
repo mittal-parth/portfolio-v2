@@ -327,6 +327,7 @@ export const educationList: Education[] = [
 export type Achievement = {
   id: string;
   icon: string;
+  photo?: string;
   event: string;
   position: string;
   highlight: string;
@@ -343,7 +344,7 @@ export const achievements: Achievement[] = [
     icon: "/assets/ethindia.png",
     event: "ETHIndia'24 | India's Largest Ethereum Hackathon",
     position: "Winner",
-    highlight: "Top 10 Overall Finalists — True Network's Winner, Polkadot 1st Runner Up",
+    highlight: "Top 10 Overall Finalists. True Network's Winner, Polkadot 1st Runner Up",
     article:
       "https://www.linkedin.com/posts/mittal-parth_super-stoked-to-announce-that-our-team-emerged-activity-7274735259621961729-tkq4",
     project: "https://devfolio.co/projects/khoj-3336",
@@ -355,7 +356,7 @@ export const achievements: Achievement[] = [
     icon: "/assets/ethglobal.png",
     event: "ETHIndia'22 | World's Largest Ethereum Hackathon",
     position: "Winner",
-    highlight: "Top 12 Winners among 20k+ registrations — Polygon's Best Public Goods",
+    highlight: "Top 12 Winners among 20k+ registrations. Polygon's Best Public Goods",
     article:
       "https://www.thehindu.com/news/cities/Mangalore/nitk-iiit-delhi-team-makes-it-to-top-12-winners-in-ethindia-22/article66238923.ece",
     project: "https://devfolio.co/projects/chargeswap-3527",
@@ -366,7 +367,7 @@ export const achievements: Achievement[] = [
     id: "a-3",
     icon: "/assets/polkadot.jpeg",
     event: "Polkadot Hackathon: Europe Edition",
-    position: "2nd Runner Up — ink! Smart Contracts",
+    position: "2nd Runner Up, ink! Smart Contracts",
     highlight: "Built GreenTrust for organic farming certification via decentralized PGSs.",
     article:
       "https://www.linkedin.com/posts/mittal-parth_hackathon-winners-web3-activity-7048340759116214272-eJvo",
@@ -378,7 +379,7 @@ export const achievements: Achievement[] = [
     icon: "/assets/placeholder-lightspeed.svg",
     event: "Warpspeed by Lightspeed 2023",
     position: "1st Runner Up",
-    highlight: "1st Runner Up Overall among 107 hackers — AWS 1st Runner Up",
+    highlight: "1st Runner Up Overall among 107 hackers. AWS 1st Runner Up",
     article: "https://shorturl.at/fhjsT",
     rotation: 2.2,
   },
@@ -386,7 +387,7 @@ export const achievements: Achievement[] = [
     id: "a-5",
     icon: "/assets/placeholder-lightspeed.svg",
     event: "Warpspeed: Agentic AI Hackathon | Lightspeed India",
-    position: "Runners Up — Base Track",
+    position: "Runners Up, Base Track",
     highlight: "Built an ambient virtual assistant before ChatGPT Pulse.",
     project: "https://devfolio.co/projects/aeva-58d2",
     rotation: -1.8,
@@ -405,7 +406,7 @@ export const achievements: Achievement[] = [
     icon: "/assets/polkadot.jpeg",
     event: "Web3 Marketing Hackathon",
     position: "Runner Up",
-    highlight: "2nd in Polkadot Challenge I — Creative Marketing Strategies.",
+    highlight: "2nd in Polkadot Challenge I. Creative Marketing Strategies.",
     article: "https://x.com/polkadotsub0/status/1998425721916551355",
     project:
       "https://taikai.network/OutofOrdinary/hackathons/web3mkthack/projects/cmi0skdbk0257vu09q3n8m44u/idea",
@@ -430,24 +431,6 @@ export const achievements: Achievement[] = [
     youtube: "https://www.youtube.com/watch?v=X2473En3h_o&t=5278s",
     project: "https://parthmittal.netlify.app/",
     rotation: -1.5,
-  },
-  {
-    id: "a-10",
-    icon: "/assets/placeholder-hackathon.svg",
-    event: "Manipal Hackathon'22",
-    position: "Consolation Prize",
-    highlight: "Top 10 among 500+ teams across India.",
-    article: "https://shorturl.at/exEIQ",
-    rotation: 1.6,
-  },
-  {
-    id: "a-11",
-    icon: "/assets/placeholder-hackathon.svg",
-    event: "ICON Hyperbuild Hackathon",
-    position: "Honorable Mention",
-    highlight: "Honorable Mention among 655 participants in a 3-month online hackathon.",
-    project: "https://devpost.com/software/green-trust-xj2w6g",
-    rotation: -2.8,
   },
   {
     id: "a-12",
