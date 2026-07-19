@@ -38,7 +38,6 @@ import {
   AiFillInstagram,
   AiFillLinkedin,
   AiFillMail,
-  AiOutlineTwitter,
   AiFillHtml5,
   AiOutlineGitlab,
 } from "react-icons/ai";
@@ -1185,7 +1184,7 @@ export const socialMedia = [
   },
   {
     id: "social-media-4",
-    icon: AiOutlineTwitter,
+    icon: FaXTwitter,
     link: "https://www.twitter.com/mittalparth_",
   }
 ];

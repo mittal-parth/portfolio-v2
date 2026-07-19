@@ -3,7 +3,6 @@ import {
   AiFillLinkedin,
   AiFillMail,
   AiFillYoutube,
-  AiOutlineTwitter,
 } from "react-icons/ai";
 import {
   SiDjango,
@@ -35,7 +34,7 @@ export const socialIconMap: Record<string, IconType> = {
   linkedin: AiFillLinkedin,
   github: AiFillGithub,
   mail: AiFillMail,
-  twitter: AiOutlineTwitter,
+  twitter: FaXTwitter,
 };
 
 export const stackIconMap: Record<string, IconType> = {

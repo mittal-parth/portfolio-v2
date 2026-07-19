@@ -26,9 +26,6 @@ export function Footer() {
           );
         })}
       </div>
-      <p className="font-hand text-lg text-[var(--color-heading-on-mat)]">
-        made on a canvas
-      </p>
       <p className="mt-2 text-sm text-[var(--color-on-mat)]/85">
         <LinkPreview href={resumeLink} title="Resume" description="Resume">
           <span className="marker-link !text-[var(--color-on-mat)]">Resume</span>

@@ -3,7 +3,7 @@ export const resumeLink =
 
 export const siteConfig = {
   name: "Parth Mittal",
-  title: "Parth Mittal — Software Developer",
+  title: "Parth Mittal - Software Developer",
   description:
     "Member of Technical Staff at Oracle. 13x hackathon winner. Builder of Khoj, Echo, and open-source tools.",
   url: "https://parthmittal.dev",

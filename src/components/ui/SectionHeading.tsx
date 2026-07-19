@@ -36,7 +36,7 @@ export function SectionHeading({
         {accent && (
           <>
             {" "}
-            <span className={cn("font-hand", accentColor)}>{accent}</span>
+            <span className={cn("font-hand text-[1.08em]", accentColor)}>{accent}</span>
           </>
         )}
       </h2>

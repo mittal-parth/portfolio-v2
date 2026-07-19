@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, type FocusEvent, type MouseEvent } from "react";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type FocusEvent, type MouseEvent } from "react";
 import { cn } from "@/lib/utils";
 
 type ContributionDay = {
@@ -37,6 +37,25 @@ const DEFAULT_COLORS = [
 
 const WEEKDAY_LABELS = ["", "Mon", "", "Wed", "", "Fri", ""];
 const ESTIMATED_WEEKS = 53;
+const MOBILE_BREAKPOINT = "(max-width: 1023px)";
+const MOBILE_GRAPH = {
+  months: 7,
+  cellSize: 8,
+  cellGap: 2,
+  showWeekdayLabels: false,
+} as const;
+
+function useMobileGraphLayout() {
+  return useSyncExternalStore(
+    (onStoreChange) => {
+      const mq = window.matchMedia(MOBILE_BREAKPOINT);
+      mq.addEventListener("change", onStoreChange);
+      return () => mq.removeEventListener("change", onStoreChange);
+    },
+    () => window.matchMedia(MOBILE_BREAKPOINT).matches,
+    () => false,
+  );
+}
 
 function parseDate(dateStr: string): Date {
   const [year, month, day] = dateStr.split("-").map(Number);
@@ -119,11 +138,19 @@ export function GitHubGraph({
   colors = DEFAULT_COLORS,
   className,
 }: GitHubGraphProps) {
+  const isMobileLayout = useMobileGraphLayout();
   const gridRef = useRef<HTMLDivElement>(null);
   const [days, setDays] = useState<ContributionDay[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [tooltip, setTooltip] = useState<TooltipState | null>(null);
+
+  const resolvedMonths = isMobileLayout ? MOBILE_GRAPH.months : months;
+  const resolvedCellSize = isMobileLayout ? MOBILE_GRAPH.cellSize : cellSize;
+  const resolvedCellGap = isMobileLayout ? MOBILE_GRAPH.cellGap : cellGap;
+  const resolvedShowWeekdayLabels = isMobileLayout
+    ? MOBILE_GRAPH.showWeekdayLabels
+    : showWeekdayLabels;
 
   useEffect(() => {
     const controller = new AbortController();
@@ -160,19 +187,19 @@ export function GitHubGraph({
 
   const visibleDays = useMemo(() => {
     const cutoff = new Date();
-    cutoff.setMonth(cutoff.getMonth() - months);
+    cutoff.setMonth(cutoff.getMonth() - resolvedMonths);
     cutoff.setHours(0, 0, 0, 0);
     return days.filter((day) => parseDate(day.date) >= cutoff);
-  }, [days, months]);
+  }, [days, resolvedMonths]);
 
   const weeks = useMemo(() => buildWeeks(visibleDays), [visibleDays]);
   const monthLabels = useMemo(() => getMonthLabels(weeks), [weeks]);
 
-  const labelWidth = showWeekdayLabels ? 28 : 0;
-  const weekCount = weeks.length || ESTIMATED_WEEKS;
-  const gridWidth = weekCount * (cellSize + cellGap) - cellGap;
-  const gridHeight = 7 * cellSize + 6 * cellGap;
-  const cellStyle = { width: cellSize, height: cellSize };
+  const weekCount = weeks.length || (isMobileLayout ? 31 : ESTIMATED_WEEKS);
+  const labelWidth = resolvedShowWeekdayLabels ? 28 : 0;
+  const gridWidth = weekCount * (resolvedCellSize + resolvedCellGap) - resolvedCellGap;
+  const gridHeight = 7 * resolvedCellSize + 6 * resolvedCellGap;
+  const cellStyle = { width: resolvedCellSize, height: resolvedCellSize };
 
   function showTooltip(
     target: HTMLElement,
@@ -202,7 +229,7 @@ export function GitHubGraph({
   }
 
   return (
-    <div className={cn("w-fit max-w-full", className)} aria-label={`GitHub contributions for ${username}`}>
+    <div className={cn("w-full max-w-full lg:w-fit", className)} aria-label={`GitHub contributions for ${username}`}>
       <div className="mb-2 flex items-baseline justify-between gap-3">
         <p className="text-xs font-medium text-[var(--color-ink-muted)]">GitHub activity</p>
         <a
@@ -229,7 +256,7 @@ export function GitHubGraph({
         <>
           {showMonthLabels && (
             <div className="flex gap-1">
-              {showWeekdayLabels && <div className="shrink-0" style={{ width: labelWidth }} />}
+              {resolvedShowWeekdayLabels && <div className="shrink-0" style={{ width: labelWidth }} />}
               <div
                 className="relative mb-1.5 h-3.5 text-[10px] leading-none text-[var(--color-ink-subtle)]"
                 style={{ width: gridWidth }}
@@ -238,7 +265,7 @@ export function GitHubGraph({
                   <span
                     key={`${label}-${weekIndex}`}
                     className="absolute top-0 whitespace-nowrap"
-                    style={{ left: weekIndex * (cellSize + cellGap) }}
+                    style={{ left: weekIndex * (resolvedCellSize + resolvedCellGap) }}
                   >
                     {label}
                   </span>
@@ -249,25 +276,25 @@ export function GitHubGraph({
 
           <div
             ref={gridRef}
-            className="relative flex max-w-full gap-1 overflow-x-auto"
+            className="relative flex w-full gap-1 overflow-x-visible"
             onMouseLeave={() => setTooltip(null)}
           >
-            {showWeekdayLabels && (
+            {resolvedShowWeekdayLabels && (
               <div
                 className="flex shrink-0 flex-col justify-between py-0.5 text-[9px] leading-none text-[var(--color-ink-subtle)]"
                 style={{ width: labelWidth, height: gridHeight }}
               >
                 {WEEKDAY_LABELS.map((lbl, i) => (
-                  <span key={i} style={{ height: cellSize }}>
+                  <span key={i} style={{ height: resolvedCellSize }}>
                     {lbl}
                   </span>
                 ))}
               </div>
             )}
 
-            <div className="inline-flex shrink-0" style={{ gap: cellGap }}>
+            <div className="inline-flex shrink-0" style={{ gap: resolvedCellGap }}>
               {weeks.map((week, wi) => (
-                <div key={wi} className="flex flex-col" style={{ gap: cellGap }}>
+                <div key={wi} className="flex flex-col" style={{ gap: resolvedCellGap }}>
                   {week.map((day, di) =>
                     day ? (
                       <div

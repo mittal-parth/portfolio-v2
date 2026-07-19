@@ -3,14 +3,14 @@ import {
   AiFillGithub,
   AiFillLinkedin,
   AiFillYoutube,
-  AiOutlineTwitter,
 } from "react-icons/ai";
+import { FaXTwitter } from "react-icons/fa6";
 
 const domainIcons: Record<string, IconType> = {
   "linkedin.com": AiFillLinkedin,
   "github.com": AiFillGithub,
-  "twitter.com": AiOutlineTwitter,
-  "x.com": AiOutlineTwitter,
+  "twitter.com": FaXTwitter,
+  "x.com": FaXTwitter,
   "youtube.com": AiFillYoutube,
   "youtu.be": AiFillYoutube,
 };

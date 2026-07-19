@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { Coffee, Pencil, Ruler, Scissors, Star } from "lucide-react";
 import { useDraggable, useDraggableEnabled } from "@/components/decor/useDraggable";
 import { cn } from "@/lib/utils";
@@ -74,20 +73,6 @@ export function ScatterDecor() {
             draggable={draggable}
           />
         ))}
-      </div>
-      <div
-        className="pointer-events-none absolute bottom-[18%] left-[2%] hidden 2xl:block"
-        style={{ transform: "rotate(-8deg)" }}
-      >
-        <div className="bg-[var(--color-paper)] p-1.5 pb-6 shadow-[4px_6px_0_var(--color-shadow)]">
-          <Image
-            src="/assets/profile-pic.jpg"
-            alt=""
-            width={80}
-            height={80}
-            className="h-20 w-20 object-cover"
-          />
-        </div>
       </div>
     </div>
   );
