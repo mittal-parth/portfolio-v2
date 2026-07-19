@@ -12,6 +12,7 @@
   --color-grid-major: oklch(85% 0.12 110 / 0.22);
   --color-on-mat: oklch(92% 0.02 95);
   --color-heading-on-mat: oklch(96% 0.01 95);
+  --color-accent-on-mat: oklch(76% 0.16 35);
   --color-marker: oklch(88% 0.14 85 / 0.45);
 
   /* Colour — cards & ink */
@@ -28,12 +29,12 @@
   --color-sticker-outline: oklch(100% 0 0);
   --color-shadow: oklch(20% 0.03 160 / 0.22);
 
-  /* GitHub graph greens */
-  --color-gh-0: oklch(38% 0.04 158);
-  --color-gh-1: oklch(48% 0.08 158);
-  --color-gh-2: oklch(58% 0.12 158);
-  --color-gh-3: oklch(68% 0.14 158);
-  --color-gh-4: oklch(78% 0.16 158);
+  /* GitHub graph greens — light → dark (GitHub light-mode order) */
+  --color-gh-0: oklch(93% 0.015 158);
+  --color-gh-1: oklch(84% 0.11 158);
+  --color-gh-2: oklch(72% 0.14 158);
+  --color-gh-3: oklch(58% 0.14 158);
+  --color-gh-4: oklch(42% 0.12 158);
 
   /* Typography */
   --font-display: var(--font-inter), system-ui, sans-serif;

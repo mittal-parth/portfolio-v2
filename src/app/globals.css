@@ -10,6 +10,7 @@
   --color-ink-subtle: var(--color-ink-subtle);
   --color-accent: var(--color-accent);
   --color-on-mat: var(--color-on-mat);
+  --color-accent-on-mat: var(--color-accent-on-mat);
   --font-sans: var(--font-body);
   --font-hand: var(--font-hand);
 }

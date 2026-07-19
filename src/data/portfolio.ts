@@ -5,12 +5,23 @@ export const siteConfig = {
   name: "Parth Mittal",
   title: "Parth Mittal — Software Developer",
   description:
-    "Member of Technical Staff at Oracle. 12× hackathon winner. Builder of Khoj, Echo, and open-source tools.",
+    "Member of Technical Staff at Oracle. 13x hackathon winner. Builder of Khoj, Echo, and open-source tools.",
   url: "https://parthmittal.dev",
   githubUsername: "mittal-parth",
   role: "Member of Technical Staff",
-  tagline: "MTS @ Oracle · 12× Hackathon Winner · NITK'24 · PBA-5",
+  tagline: "MTS @ Oracle · 13x Hackathon Winner · NITK'24 · PBA-5",
 };
+
+/** GitHub contribution graph — tweak months, labels, and sizing here. */
+export const githubGraphConfig = {
+  /** Rolling window in months — 12 matches GitHub's last-year view */
+  months: 12,
+  cellSize: 11,
+  cellGap: 3,
+  showLegend: true,
+  showWeekdayLabels: true,
+  showMonthLabels: true,
+} as const;
 
 export type SocialLink = {
   id: string;
@@ -91,7 +102,7 @@ export const introBullets: IntroBullet[] = [
       {
         type: "text",
         value:
-          ". Participated in 30+, won 12 (including one of India's largest Web3 hackathons), and judged 3.",
+          ". Participated in 30+, won 13 (including one of India's largest Web3 hackathons), and judged 3.",
       },
     ],
   },
@@ -106,7 +117,7 @@ export const introBullets: IntroBullet[] = [
         previewTitle: "IRIS, NITK",
         previewDescription: "Institute MIS with 10K+ active users.",
       },
-      { type: "text", value: " — an MIS with 10K+ active users." },
+      { type: "text", value: " - an MIS with 10K+ active users." },
     ],
   },
   {

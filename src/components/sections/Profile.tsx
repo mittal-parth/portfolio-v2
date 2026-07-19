@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import {
+  githubGraphConfig,
   introBullets,
   siteConfig,
   socialMedia,
@@ -41,13 +42,14 @@ function renderSegment(segment: IntroSegment, key: number) {
 function ProfileHeader() {
   return (
     <div className="mb-3 flex items-start justify-between gap-3">
-      <div className="min-w-0">
-        <p className="text-sm text-[var(--color-ink-muted)]">
-          Hi, I&apos;m{" "}
-          <span className="font-semibold text-[var(--color-ink)]">{siteConfig.name}</span>{" "}
-          <span aria-hidden="true">👋</span>
-        </p>
-        <p className="mt-0.5 font-hand text-base text-[var(--color-accent)]">
+      <div className="min-w-0 text-shadow-on-mat">
+        <h1
+          id="profile-heading"
+          className="text-2xl font-semibold tracking-tight text-[var(--color-heading-on-mat)] sm:text-3xl"
+        >
+          {siteConfig.name}
+        </h1>
+        <p className="mt-1.5 font-hand text-xl text-[var(--color-accent-on-mat)] sm:text-2xl">
           {siteConfig.tagline}
         </p>
       </div>
@@ -99,9 +101,6 @@ export function ProfileSection() {
             className="h-[8.75rem] w-[8.75rem] object-cover"
             priority
           />
-          <p className="mt-2 text-center font-hand text-sm text-[var(--color-ink-muted)]">
-            {siteConfig.name}
-          </p>
         </Polaroid>
 
         <div className="min-w-0 space-y-4">
@@ -109,14 +108,8 @@ export function ProfileSection() {
           <StickyNote rotation={1.2} color="yellow">
             <IntroList />
           </StickyNote>
-          <TapedCard rotation={-0.4}>
-            <GitHubGraph
-              username={siteConfig.githubUsername}
-              showLegend
-              showWeekdayLabels
-              showMonthLabels
-              cellSize={11}
-            />
+          <TapedCard rotation={-0.4} className="w-fit max-w-full [&>div]:p-3">
+            <GitHubGraph username={siteConfig.githubUsername} {...githubGraphConfig} />
           </TapedCard>
         </div>
       </div>

@@ -1,12 +1,18 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type FocusEvent, type MouseEvent } from "react";
 import { cn } from "@/lib/utils";
 
 type ContributionDay = {
   date: string;
   count: number;
   level: number;
+};
+
+type TooltipState = {
+  text: string;
+  x: number;
+  y: number;
 };
 
 export type GitHubGraphProps = {
@@ -18,6 +24,7 @@ export type GitHubGraphProps = {
   showWeekdayLabels?: boolean;
   showMonthLabels?: boolean;
   colors?: string[];
+  className?: string;
 };
 
 const DEFAULT_COLORS = [
@@ -29,6 +36,37 @@ const DEFAULT_COLORS = [
 ];
 
 const WEEKDAY_LABELS = ["", "Mon", "", "Wed", "", "Fri", ""];
+const ESTIMATED_WEEKS = 53;
+
+function parseDate(dateStr: string): Date {
+  const [year, month, day] = dateStr.split("-").map(Number);
+  return new Date(year, month - 1, day);
+}
+
+function ordinal(day: number): string {
+  if (day >= 11 && day <= 13) return `${day}th`;
+  switch (day % 10) {
+    case 1:
+      return `${day}st`;
+    case 2:
+      return `${day}nd`;
+    case 3:
+      return `${day}rd`;
+    default:
+      return `${day}th`;
+  }
+}
+
+function formatContributionDate(dateStr: string): string {
+  const date = parseDate(dateStr);
+  const month = date.toLocaleString("en", { month: "short" });
+  return `${ordinal(date.getDate())} ${month} ${date.getFullYear()}`;
+}
+
+function formatTooltip(dateStr: string, count: number): string {
+  const noun = count === 1 ? "contribution" : "contributions";
+  return `${count} ${noun} on ${formatContributionDate(dateStr)}`;
+}
 
 function levelFromCount(count: number): number {
   if (count === 0) return 0;
@@ -58,11 +96,11 @@ function getMonthLabels(weeks: (ContributionDay | null)[][]) {
   weeks.forEach((week, wi) => {
     const firstDay = week.find((d) => d !== null);
     if (!firstDay) return;
-    const month = new Date(firstDay.date).getMonth();
+    const month = parseDate(firstDay.date).getMonth();
     if (month !== lastMonth) {
       labels.push({
         weekIndex: wi,
-        label: new Date(firstDay.date).toLocaleString("en", { month: "short" }),
+        label: parseDate(firstDay.date).toLocaleString("en", { month: "short" }),
       });
       lastMonth = month;
     }
@@ -72,18 +110,20 @@ function getMonthLabels(weeks: (ContributionDay | null)[][]) {
 
 export function GitHubGraph({
   username,
-  months = 6,
-  cellSize = 12,
+  months = 12,
+  cellSize = 11,
   cellGap = 3,
   showLegend = true,
   showWeekdayLabels = true,
   showMonthLabels = true,
   colors = DEFAULT_COLORS,
+  className,
 }: GitHubGraphProps) {
+  const gridRef = useRef<HTMLDivElement>(null);
   const [days, setDays] = useState<ContributionDay[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [tooltip, setTooltip] = useState<string | null>(null);
+  const [tooltip, setTooltip] = useState<TooltipState | null>(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -121,18 +161,49 @@ export function GitHubGraph({
   const visibleDays = useMemo(() => {
     const cutoff = new Date();
     cutoff.setMonth(cutoff.getMonth() - months);
-    return days.filter((day) => new Date(day.date) >= cutoff);
+    cutoff.setHours(0, 0, 0, 0);
+    return days.filter((day) => parseDate(day.date) >= cutoff);
   }, [days, months]);
 
   const weeks = useMemo(() => buildWeeks(visibleDays), [visibleDays]);
   const monthLabels = useMemo(() => getMonthLabels(weeks), [weeks]);
 
   const labelWidth = showWeekdayLabels ? 28 : 0;
-  const gridWidth = weeks.length * (cellSize + cellGap);
+  const weekCount = weeks.length || ESTIMATED_WEEKS;
+  const gridWidth = weekCount * (cellSize + cellGap) - cellGap;
+  const gridHeight = 7 * cellSize + 6 * cellGap;
+  const cellStyle = { width: cellSize, height: cellSize };
+
+  function showTooltip(
+    target: HTMLElement,
+    text: string,
+  ) {
+    const grid = gridRef.current;
+    if (!grid) return;
+    const gridRect = grid.getBoundingClientRect();
+    const cellRect = target.getBoundingClientRect();
+    setTooltip({
+      text,
+      x: cellRect.left - gridRect.left + cellRect.width / 2,
+      y: cellRect.top - gridRect.top - 4,
+    });
+  }
+
+  function handleCellMouseEnter(
+    event: MouseEvent<HTMLElement>,
+    dateStr: string,
+    count: number,
+  ) {
+    showTooltip(event.currentTarget, formatTooltip(dateStr, count));
+  }
+
+  function handleCellFocus(event: FocusEvent<HTMLElement>, dateStr: string, count: number) {
+    showTooltip(event.currentTarget, formatTooltip(dateStr, count));
+  }
 
   return (
-    <div aria-label={`GitHub contributions for ${username}`}>
-      <div className="mb-2 flex items-baseline justify-between gap-2">
+    <div className={cn("w-fit max-w-full", className)} aria-label={`GitHub contributions for ${username}`}>
+      <div className="mb-2 flex items-baseline justify-between gap-3">
         <p className="text-xs font-medium text-[var(--color-ink-muted)]">GitHub activity</p>
         <a
           href={`https://github.com/${username}`}
@@ -145,36 +216,46 @@ export function GitHubGraph({
       </div>
 
       {loading && (
-        <div className="h-20 animate-pulse rounded-[var(--radius-md)] bg-[var(--color-paper-muted)]" />
+        <div
+          className="animate-pulse rounded-[var(--radius-md)] bg-[var(--color-paper-muted)]"
+          style={{ width: gridWidth + labelWidth + 4, height: gridHeight + (showLegend ? 24 : 0) }}
+        />
       )}
       {error && !loading && (
         <p className="text-xs text-[var(--color-ink-muted)]">{error}</p>
       )}
 
-      {!loading && !error && (
+      {!loading && !error && weeks.length > 0 && (
         <>
           {showMonthLabels && (
-            <div
-              className="relative mb-1 text-[10px] text-[var(--color-ink-subtle)]"
-              style={{ marginLeft: labelWidth, width: gridWidth }}
-            >
-              {monthLabels.map(({ weekIndex, label }) => (
-                <span
-                  key={`${label}-${weekIndex}`}
-                  className="absolute top-0"
-                  style={{ left: weekIndex * (cellSize + cellGap) }}
-                >
-                  {label}
-                </span>
-              ))}
+            <div className="flex gap-1">
+              {showWeekdayLabels && <div className="shrink-0" style={{ width: labelWidth }} />}
+              <div
+                className="relative mb-1.5 h-3.5 text-[10px] leading-none text-[var(--color-ink-subtle)]"
+                style={{ width: gridWidth }}
+              >
+                {monthLabels.map(({ weekIndex, label }) => (
+                  <span
+                    key={`${label}-${weekIndex}`}
+                    className="absolute top-0 whitespace-nowrap"
+                    style={{ left: weekIndex * (cellSize + cellGap) }}
+                  >
+                    {label}
+                  </span>
+                ))}
+              </div>
             </div>
           )}
 
-          <div className="flex gap-1 overflow-x-auto pb-1">
+          <div
+            ref={gridRef}
+            className="relative flex max-w-full gap-1 overflow-x-auto"
+            onMouseLeave={() => setTooltip(null)}
+          >
             {showWeekdayLabels && (
               <div
                 className="flex shrink-0 flex-col justify-between py-0.5 text-[9px] leading-none text-[var(--color-ink-subtle)]"
-                style={{ width: labelWidth, gap: cellGap, height: 7 * cellSize + 6 * cellGap }}
+                style={{ width: labelWidth, height: gridHeight }}
               >
                 {WEEKDAY_LABELS.map((lbl, i) => (
                   <span key={i} style={{ height: cellSize }}>
@@ -184,58 +265,52 @@ export function GitHubGraph({
               </div>
             )}
 
-            <div className="inline-flex" style={{ gap: cellGap }}>
+            <div className="inline-flex shrink-0" style={{ gap: cellGap }}>
               {weeks.map((week, wi) => (
                 <div key={wi} className="flex flex-col" style={{ gap: cellGap }}>
                   {week.map((day, di) =>
                     day ? (
                       <div
                         key={day.date}
-                        className={cn("rounded-[2px]")}
+                        className="rounded-[2px] hover:ring-1 hover:ring-[var(--color-ink)]/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-focus)]"
                         style={{
-                          width: cellSize,
-                          height: cellSize,
+                          ...cellStyle,
                           backgroundColor: colors[Math.min(day.level, 4)],
                         }}
                         role="img"
-                        aria-label={`${day.date}: ${day.count} contributions`}
-                        onMouseEnter={() =>
-                          setTooltip(
-                            `${day.date}: ${day.count} contribution${day.count === 1 ? "" : "s"}`,
-                          )
-                        }
-                        onMouseLeave={() => setTooltip(null)}
-                        onFocus={() =>
-                          setTooltip(
-                            `${day.date}: ${day.count} contribution${day.count === 1 ? "" : "s"}`,
-                          )
-                        }
+                        aria-label={formatTooltip(day.date, day.count)}
+                        onMouseEnter={(event) => handleCellMouseEnter(event, day.date, day.count)}
+                        onFocus={(event) => handleCellFocus(event, day.date, day.count)}
                         onBlur={() => setTooltip(null)}
                         tabIndex={0}
                       />
                     ) : (
-                      <div key={`e-${wi}-${di}`} style={{ width: cellSize, height: cellSize }} />
+                      <div key={`e-${wi}-${di}`} style={cellStyle} aria-hidden="true" />
                     ),
                   )}
                 </div>
               ))}
             </div>
+
+            {tooltip && (
+              <div
+                role="tooltip"
+                className="pointer-events-none absolute z-20 -translate-x-1/2 -translate-y-full whitespace-nowrap rounded-[4px] bg-[var(--color-ink)] px-2 py-1.5 text-[10px] leading-none text-[var(--color-paper)] shadow-[0_4px_12px_var(--color-shadow)]"
+                style={{ left: tooltip.x, top: tooltip.y }}
+              >
+                {tooltip.text}
+              </div>
+            )}
           </div>
 
-          {tooltip && (
-            <p className="mt-1 text-[10px] text-[var(--color-ink-subtle)]" aria-live="polite">
-              {tooltip}
-            </p>
-          )}
-
           {showLegend && (
-            <div className="mt-2 flex items-center justify-end gap-1.5 text-[10px] text-[var(--color-ink-subtle)]">
+            <div className="mt-1.5 flex items-center justify-end gap-1.5 text-[10px] text-[var(--color-ink-subtle)]">
               <span>Less</span>
               {colors.map((c, i) => (
                 <div
                   key={i}
                   className="rounded-[2px]"
-                  style={{ width: cellSize, height: cellSize, backgroundColor: c }}
+                  style={{ ...cellStyle, backgroundColor: c }}
                   aria-hidden="true"
                 />
               ))}
