@@ -11,7 +11,6 @@ import { LinkPreview } from "@/components/ui/LinkPreview";
 import type { IntroSegment } from "@/data/portfolio";
 import { GitHubGraph } from "@/components/sections/GitHubGraph";
 import { Polaroid, Stamp, StickyNote, TapedCard } from "@/components/decor/Decor";
-import { useLayoutMode } from "@/components/layout/LayoutModeProvider";
 
 function renderSegment(segment: IntroSegment, key: number) {
   switch (segment.type) {
@@ -87,56 +86,7 @@ function IntroList() {
   );
 }
 
-function CleanProfile() {
-  return (
-    <section id="profile" aria-labelledby="profile-heading" className="clean-section animate-fade-up">
-      <div className="mb-4 flex items-start gap-4">
-        <Image
-          src="/assets/profile-pic.jpg"
-          alt="Parth Mittal"
-          width={64}
-          height={64}
-          className="h-16 w-16 shrink-0 rounded-[var(--radius-squircle)] border-2 border-[var(--color-sticker-outline)] object-cover"
-          priority
-        />
-        <div className="min-w-0 flex-1">
-          <h1 id="profile-heading" className="text-xl font-bold text-[var(--color-ink)]">
-            {siteConfig.name}
-          </h1>
-          <p className="text-sm text-[var(--color-ink-muted)]">{siteConfig.role}</p>
-          <div className="mt-2 flex gap-2">
-            {socialMedia.map((social) => {
-              const Icon = socialIconMap[social.platform];
-              return (
-                <a
-                  key={social.id}
-                  href={social.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={social.label}
-                  className="text-[var(--color-ink-muted)] hover:text-[var(--color-accent)]"
-                >
-                  <Icon size={16} />
-                </a>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-      <IntroList />
-      <div className="mt-4 border-t border-[var(--color-paper-muted)] pt-4">
-        <GitHubGraph
-          username={siteConfig.githubUsername}
-          showLegend
-          showWeekdayLabels
-          showMonthLabels
-        />
-      </div>
-    </section>
-  );
-}
-
-function CanvasProfile() {
+export function ProfileSection() {
   return (
     <section id="profile" aria-labelledby="profile-heading" className="animate-fade-up">
       <div className="grid gap-6 lg:grid-cols-[minmax(0,11rem)_1fr] lg:items-start">
@@ -172,9 +122,4 @@ function CanvasProfile() {
       </div>
     </section>
   );
-}
-
-export function ProfileSection() {
-  const { mode } = useLayoutMode();
-  return mode === "canvas" ? <CanvasProfile /> : <CleanProfile />;
 }

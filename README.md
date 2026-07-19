@@ -1,6 +1,6 @@
 # Parth Mittal — Canvas Portfolio
 
-Personal portfolio with two switchable layouts: **Canvas** (full-page cutting mat) and **Clean** (paper site + one mat section).
+Personal portfolio built on a code-generated self-healing cutting mat — content presented as pasted stickers, polaroids, sticky notes, and pinned cards.
 
 ## Stack
 
@@ -15,7 +15,7 @@ pnpm install
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). Use the **Canvas / Clean** toggle in the nav to compare layouts.
+Open [http://localhost:3000](http://localhost:3000).
 
 ## Environment
 

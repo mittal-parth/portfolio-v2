@@ -5,10 +5,8 @@ import { ExternalLink, Newspaper } from "lucide-react";
 import { AiFillGithub, AiFillYoutube } from "@/lib/icons";
 import { achievements } from "@/data/portfolio";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { MatSurface } from "@/components/canvas/MatSurface";
 import { Stamp } from "@/components/decor/Decor";
 import { useDraggable, useDraggableEnabled } from "@/components/decor/useDraggable";
-import { useLayoutMode } from "@/components/layout/LayoutModeProvider";
 import { cn } from "@/lib/utils";
 
 const linkIcons = [
@@ -81,7 +79,7 @@ function AchievementCard({
   );
 }
 
-function CanvasAchievements() {
+export function AchievementsSection() {
   return (
     <section id="achievements" aria-labelledby="achievements-heading" className="animate-fade-up">
       <SectionHeading
@@ -106,30 +104,4 @@ function CanvasAchievements() {
       </div>
     </section>
   );
-}
-
-function CleanAchievements() {
-  return (
-    <section id="achievements" aria-labelledby="achievements-heading" className="animate-fade-up">
-      <SectionHeading id="achievements-heading" title="Achievements" accent="on the mat" />
-      <div className="relative min-h-[28rem] overflow-hidden rounded-[var(--radius-xl)]">
-        <MatSurface variant="panel" className="absolute inset-0" />
-        <div className="relative z-10 p-6">
-          <p className="mb-4 font-hand text-lg text-[var(--color-heading-on-mat)] text-shadow-on-mat">
-            hackathon wins & highlights
-          </p>
-          <div className="achievement-scroll flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory">
-            {achievements.map((item) => (
-              <AchievementCard key={item.id} item={item} className="snap-start" />
-            ))}
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-export function AchievementsSection() {
-  const { mode } = useLayoutMode();
-  return mode === "canvas" ? <CanvasAchievements /> : <CleanAchievements />;
 }

@@ -12,7 +12,6 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { LinkPreview } from "@/components/ui/LinkPreview";
 import { TapedCard } from "@/components/decor/Decor";
 import { cn } from "@/lib/utils";
-import { useLayoutMode } from "@/components/layout/LayoutModeProvider";
 
 function ExperienceCompany({ exp }: { exp: Experience }) {
   const [expanded, setExpanded] = useState(false);
@@ -121,42 +120,24 @@ function EducationItem({ edu }: { edu: (typeof educationList)[number] }) {
   );
 }
 
-function TimelineContent() {
-  return (
-    <>
-      <SectionHeading id="experience-heading" title="Experience" accent="& education" />
-      <div className="space-y-5">
-        {experiences.map((exp) => (
-          <ExperienceCompany key={exp.id} exp={exp} />
-        ))}
-      </div>
-      <div className="my-5 h-px bg-[var(--color-ink-subtle)]/15" />
-      <h3 className="mb-4 text-sm font-semibold text-[var(--color-ink)]">Education</h3>
-      <div className="space-y-5">
-        {educationList.map((edu) => (
-          <EducationItem key={edu.id} edu={edu} />
-        ))}
-      </div>
-    </>
-  );
-}
-
 export function TimelineSection() {
-  const { mode } = useLayoutMode();
-
-  if (mode === "canvas") {
-    return (
-      <section id="experience" aria-labelledby="experience-heading" className="animate-fade-up">
-        <TapedCard rotation={0.8}>
-          <TimelineContent />
-        </TapedCard>
-      </section>
-    );
-  }
-
   return (
-    <section id="experience" aria-labelledby="experience-heading" className="clean-section animate-fade-up">
-      <TimelineContent />
+    <section id="experience" aria-labelledby="experience-heading" className="animate-fade-up">
+      <TapedCard rotation={0.8}>
+        <SectionHeading id="experience-heading" title="Experience" accent="& education" />
+        <div className="space-y-5">
+          {experiences.map((exp) => (
+            <ExperienceCompany key={exp.id} exp={exp} />
+          ))}
+        </div>
+        <div className="my-5 h-px bg-[var(--color-ink-subtle)]/15" />
+        <h3 className="mb-4 text-sm font-semibold text-[var(--color-ink)]">Education</h3>
+        <div className="space-y-5">
+          {educationList.map((edu) => (
+            <EducationItem key={edu.id} edu={edu} />
+          ))}
+        </div>
+      </TapedCard>
     </section>
   );
 }

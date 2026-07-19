@@ -28,10 +28,6 @@ body {
   line-height: 1.65;
 }
 
-body[data-layout="clean"] {
-  background: var(--color-paper);
-}
-
 ::selection {
   background: oklch(88% 0.14 85 / 0.35);
 }
@@ -138,11 +134,4 @@ body[data-layout="clean"] {
 .achievement-scroll::-webkit-scrollbar-thumb {
   background: var(--color-grid-major);
   border-radius: 999px;
-}
-
-.clean-section {
-  border: 1px solid oklch(85% 0.01 90);
-  border-radius: var(--radius-xl);
-  background: var(--color-paper);
-  padding: var(--space-lg);
 }

@@ -7,7 +7,6 @@ import { getStackIcon } from "@/lib/icons";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { PinnedCard } from "@/components/decor/Decor";
 import { placeholderGradient } from "@/lib/utils";
-import { useLayoutMode } from "@/components/layout/LayoutModeProvider";
 
 function ProjectPreview({ title }: { title: string }) {
   return (
@@ -67,8 +66,9 @@ function ProjectCardContent({ project }: { project: (typeof projects)[number] })
   );
 }
 
-function CanvasProjects() {
+export function ProjectsSection() {
   const rotations = [-1.5, 1.2, -0.8, 1.6, -1.1, 0.9];
+
   return (
     <section id="projects" aria-labelledby="projects-heading" className="animate-fade-up">
       <SectionHeading id="projects-heading" title="Projects" accent="pinned up" onMat />
@@ -81,24 +81,4 @@ function CanvasProjects() {
       </div>
     </section>
   );
-}
-
-function CleanProjects() {
-  return (
-    <section id="projects" aria-labelledby="projects-heading" className="clean-section animate-fade-up">
-      <SectionHeading id="projects-heading" title="Projects" />
-      <div className="grid grid-cols-1 gap-6 min-[480px]:grid-cols-2">
-        {projects.map((project) => (
-          <article key={project.id} className="min-w-0">
-            <ProjectCardContent project={project} />
-          </article>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-export function ProjectsSection() {
-  const { mode } = useLayoutMode();
-  return mode === "canvas" ? <CanvasProjects /> : <CleanProjects />;
 }
